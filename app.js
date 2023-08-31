@@ -1,12 +1,41 @@
-const http = require('http');
-const PORT = 3000;
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
-const server = http.createServer((req, res) => {
-  res.writeHead(200, {
-    'Content-Type': 'text/html; charset=utf8'
-  });
-  // в методе end тоже можно передать данные
-  res.end('<h1>Привет, мир!</h1>', 'utf8');
+const { PORT = 3000 } = process.env;
+const app = express();
+
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// подключаемся к серверу mongo
+mongoose
+.set('strictQuery', false)
+.connect('mongodb://127.0.0.1:27017/mestodb', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch((error) => console.log(error))
+
+
+app.use((req, res, next) => {
+  req.user = {
+    _id: '64ee257f14a0210e54df1aff' // вставьте сюда _id созданного в предыдущем пункте пользователя
+  };
+
+  next();
 });
 
-server.listen(PORT);
+
+app.use('/', require('./routes/users'));
+app.use('/', require('./routes/cards'));
+
+
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
+})
+
+

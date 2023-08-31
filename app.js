@@ -34,8 +34,17 @@ app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
 
+const data = {
+  "name": "s",
+  "about": "Турист крутой",
+  "avatar": "https://sun9-16.userapi.com/impf/c856120/v856120906/b41a2/gxB4g0YbI98.jpg?size=320x213&quality=96&sign=510ebe7807acaaa5f5857d873395bab6&c_uniq_tag=5Nv3vayipWO784KLoGsnTt3Zdmn3nYcj_CyDCCuArxA&type=album",
+  "_id": "64f0ca270b7e1c1c72498b46"
+}
+
+
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
+  console.log(data.name.length);
 })
 
 

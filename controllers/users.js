@@ -52,7 +52,11 @@ module.exports.craeteUser = (req, res) => {
       } else if (name.length > 30) {
         console.log(" и я тут")
         res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя в поле имя больше 30 или меньше 3 символов' });
-      } else {
+      }else if(about.length < 2) {
+        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя в поле имя больше 30 или меньше 3 символов' });
+      }else if (about.length > 30) {
+        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя в поле имя больше 30 или меньше 3 символов' });
+      }else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
     })

@@ -12,7 +12,7 @@ module.exports.getCards = (req, res) => {
 }
 
 module.exports.craeteCard = (req, res) => {
-  const {name, link} = req.body;
+  const { name, link } = req.body;
   Card.create({ name, link })
     .then((card) => {
       if (!name) {
@@ -47,7 +47,9 @@ module.exports.getDeleteCardById = (req, res) => {
     })
     .catch((err) => {
       if (err.message === 'NotValidId') {
-        res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
+        res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
+      } else if (req.params.id.length !== 24) {
+        res.status(400).send({ message: 'Пользователь с указанным _id не найден' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
@@ -66,7 +68,9 @@ module.exports.likeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.message === 'NotValidId') {
-        res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
+        res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
+      } else if (req.params.id.length !== 24) {
+        res.status(400).send({ message: 'Пользователь с указанным _id не найден' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
@@ -85,7 +89,9 @@ module.exports.dislikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.message === 'NotValidId') {
-        res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
+        res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
+      } else if (req.params.id.length !== 24) {
+        res.status(400).send({ message: 'Пользователь с указанным _id не найден' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }

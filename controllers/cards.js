@@ -25,7 +25,18 @@ module.exports.craeteCard = (req, res) => {
         res.status(200).send({ data: card })
       }
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => {
+      if (name.length < 2) {
+        console.log("я тут")
+        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя в поле имя больше 30 или меньше 3 символов' });
+        return;
+      } else if (name.length > 30) {
+        console.log(" и я тут")
+        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя в поле имя больше 30 или меньше 3 символов' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    })
 };
 
 module.exports.getDeleteCardById = (req, res) => {
@@ -42,8 +53,6 @@ module.exports.getDeleteCardById = (req, res) => {
       }
     })
 };
-
-
 
 
 module.exports.likeCard = (req, res) => {
@@ -63,9 +72,6 @@ module.exports.likeCard = (req, res) => {
       }
     })
 };
-
-
-
 
 
 module.exports.dislikeCard = (req, res) => {

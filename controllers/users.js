@@ -45,4 +45,61 @@ module.exports.craeteUser = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 }
 
+module.exports.updateProfile = (req, res) => {
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, about })
+  .orFail(new Error('NotValidId'))
+  .then((user) => {
+    if (!name) {
+      res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+      return;
+    } else if (!about) {
+      res.status(400).send({ message: 'Переданы некорректные данные при создании профиля' });
+      return;
+    } else {
+      res.status(200).send({
+        _id: user._id,
+        avatar: user.avatar,
+        name,
+        about,
+      })
+    }
+  })
+  .catch((err) => {
+    if (err.message === 'NotValidId') {
+      res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
+    } else {
+      res.status(500).send({ message: 'Произошла ошибка' });
+    }
+  })
+}
+
+
+module.exports.updateAvatar = (req, res) => {
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(req.user._id, { avatar })
+  .orFail(new Error('NotValidId'))
+  .then((user) => {
+    if (!avatar) {
+      res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+      return;
+    } else {
+      res.status(200).send({
+        _id: user._id,
+        avatar ,
+        name: user.name,
+        about: user.about,
+      })
+    }
+  })
+  .catch((err) => {
+    if (err.message === 'NotValidId') {
+      res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
+    } else {
+      res.status(500).send({ message: 'Произошла ошибка' });
+    }
+  })
+}
+
+
 

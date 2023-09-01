@@ -3,11 +3,12 @@ const User = require('../models/user');
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => {
-      res.status(200).send({ data: users });
+        res.status(200).send({ data: users });
     })
     .catch(() => {
       res.status(500).send({ message: 'Произошла ошибка' });
     })
+
 };
 
 module.exports.getUserById = (req, res) => {
@@ -117,6 +118,8 @@ module.exports.updateAvatar = (req, res) => {
       }
     })
 }
+
+
 
 
 

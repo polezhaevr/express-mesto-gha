@@ -1,7 +1,6 @@
 const Card = require('../models/card');
 
 module.exports.getCards = (req, res) => {
-  console.log(req.user._id);
   Card.find({})
     .then((cards) => {
       res.status(200).send({ data: cards });

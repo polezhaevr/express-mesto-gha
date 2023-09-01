@@ -48,7 +48,7 @@ module.exports.getDeleteCardById = (req, res) => {
     .catch((err) => {
       if (err.message === 'NotValidId') {
         res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
-      } else if (req.params.id.length !== 24) {
+      } else if (req.params.cardId.length !== 24) {
         res.status(400).send({ message: 'Пользователь с указанным _id не найден' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });

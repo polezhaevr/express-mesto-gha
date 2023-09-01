@@ -23,13 +23,13 @@ mongoose
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '64f0bb1105ac7268d2ca7de6' // вставьте сюда _id созданного в предыдущем пункте пользователя
+    _id: '64f2019af9472ab502ebcb10' // вставьте сюда _id созданного в предыдущем пункте пользователя
   };
 
   next();
 });
 
-const a ="64f0bb1105ac7268d2ca7de6"
+
 
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
@@ -38,8 +38,6 @@ app.use('/', require('./routes/cards'));
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
-  console.log(a.length);
-
 })
 
 

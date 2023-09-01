@@ -6,7 +6,7 @@ module.exports.getCards = (req, res) => {
       res.status(200).send({ data: cards });
     })
     .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка' });
+      res.status(500).send({ message: 'На сервере произошла ошибка' });
     })
 }
 
@@ -33,7 +33,7 @@ module.exports.craeteCard = (req, res) => {
         console.log(" и я тут")
         res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя в поле имя больше 30 или меньше 3 символов' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     })
 };
@@ -50,7 +50,7 @@ module.exports.getDeleteCardById = (req, res) => {
       } else if (req.params.cardId.length !== 24) {
         res.status(400).send({ message: 'Пользователь с указанным _id не найден' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     })
 };
@@ -71,7 +71,7 @@ module.exports.likeCard = (req, res) => {
       } else if (req.params.cardId.length !== 24) {
         res.status(400).send({ message: 'Неверный _id' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     })
 };
@@ -93,7 +93,7 @@ module.exports.dislikeCard = (req, res) => {
       } else if (req.params.cardId.length !== 24) {
         res.status(400).send({ message: 'Неверный _id' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     })
 };

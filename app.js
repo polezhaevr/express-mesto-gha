@@ -34,11 +34,10 @@ app.use('/', require('./routes/cards'));
 
 app.use(errors());
 app.use((err, req, res, next) => {
-  const { message = 'На сервере произошла ошибка.' } = err;
-  res.status(500).send({ message });
+  const { statusCode = 500, message = 'На сервере произошла ошибка.' } = err;
+  res.status(statusCode).send({ message });
   next();
 });
-
 app.use('*', (req, res, next) => next(new NotFound('Такая страница не существует.')));
 
 app.listen(PORT, () => {

@@ -7,6 +7,7 @@ const app = express();
 const auth = require('./middlewares/auth');
 const { validateLogin, validateCreateUser } = require('./middlewares/validation');
 const { errors } = require('celebrate');
+const NotFound = require('./errors/NotFound');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,13 +33,15 @@ app.use(auth);
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
+app.use('*', (req, res, next) => next(new NotFound('Такая страница не существует.')));
+
 app.use(errors());
 app.use((err, req, res, next) => {
   const { statusCode = 500, message = 'На сервере произошла ошибка.' } = err;
   res.status(statusCode).send({ message });
   next();
 });
-app.use('*', (req, res, next) => next(new NotFound('Такая страница не существует.')));
+
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

@@ -20,7 +20,7 @@ module.exports.validateCreateUser = celebrate({
 
 module.exports.validateGetUserById = celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().required().regex(REG_ID),
+    id: Joi.string().length(24).hex(),
   }),
 });
 

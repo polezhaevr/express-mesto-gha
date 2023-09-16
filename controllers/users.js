@@ -1,21 +1,20 @@
-const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { Error } = require('mongoose');
+const User = require('../models/user');
 const BadRequest = require('../errors/BadRequest');
 const NotFound = require('../errors/NotFound');
 const Conflict = require('../errors/Conflict');
-const { Error } = require('mongoose');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
       res.status(200).send({ data: users });
     })
-    .catch(next)
-
+    .catch(next);
 };
 
-module.exports.getUserById = (req, res , next) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .orFail(new NotFound('Пользователь по указанному `_id` не найден.'))
     .then((user) => {
@@ -24,13 +23,16 @@ module.exports.getUserById = (req, res , next) => {
     .catch((err) => {
       if (err instanceof Error.CastError) {
         next(new BadRequest('Переданы некорректные данные при поиске пользователя.'));
+        return;
       }
       next(err);
     });
 };
 
 module.exports.craeteUser = (req, res, next) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
 
   const createUser = (hash) => User.create({
     name,
@@ -44,24 +46,26 @@ module.exports.craeteUser = (req, res, next) => {
     .hash(password, 10)
     .then((hash) => createUser(hash))
     .then((user) => {
-      res.status(200).send({
+      res.status(201).send({
         email: user.email,
         name: user.name,
         about: user.about,
         avatar: user.avatar,
         _id: user._id,
-      })
+      });
     })
     .catch((err) => {
       if (err instanceof Error.ValidationError) {
         next(new BadRequest('Переданы некорректные данные при создании пользователя.'));
+        return;
       }
       if (err.code === 11000) {
         next(new Conflict('Пользователь с таким email уже зарегистрирован.'));
+        return;
       }
       next(err);
     });
-}
+};
 
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
@@ -73,16 +77,16 @@ module.exports.updateProfile = (req, res, next) => {
         avatar: user.avatar,
         name,
         about,
-      })
+      });
     })
     .catch((err) => {
       if (err instanceof Error.ValidationError) {
         next(new BadRequest('Переданы некорректные данные при обновлении профиля.'));
+        return;
       }
       next(err);
     });
-}
-
+};
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
@@ -94,16 +98,16 @@ module.exports.updateAvatar = (req, res, next) => {
         avatar,
         name: user.name,
         about: user.about,
-      })
+      });
     })
     .catch((err) => {
       if (err instanceof Error.ValidationError) {
         next(new BadRequest('Переданы некорректные данные при обновлении автара.'));
+        return;
       }
       next(err);
     });
-}
-
+};
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -123,6 +127,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     .catch((err) => {
       if (err instanceof Error.CastError) {
         next(new BadRequest('Переданы некорректные данные при поиске пользователя.'));
+        return;
       }
       next(err);
     });

@@ -1,101 +1,84 @@
 const Card = require('../models/card');
+const { Error } = require('mongoose');
+const NotFound = require('../errors/NotFound');
+const BadRequest = require('../errors/BadRequest');
+const Forbidden = require('../errors/Forbidden');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => {
       res.status(200).send({ data: cards });
     })
-    .catch(() => {
-      res.status(500).send({ message: 'На сервере произошла ошибка' });
-    })
+    .catch(next);
 }
 
-module.exports.craeteCard = (req, res) => {
+module.exports.craeteCard = (req, res, next) => {
   const { name, link } = req.body;
-  Card.create({ name, link })
-    .then((card) => {
-      if (!name) {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки.' });
-        return;
-      } else if (!link) {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки.' });
-        return;
-      } else {
-        res.status(200).send({ data: card })
-      }
-    })
-    .catch(() => {
-      if (name.length < 2) {
-        console.log("я тут")
-        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя в поле имя больше 30 или меньше 3 символов' });
-        return;
-      } else if (name.length > 30) {
-        console.log(" и я тут")
-        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя в поле имя больше 30 или меньше 3 символов' });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
-      }
-    })
-};
 
-module.exports.getDeleteCardById = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .orFail(new Error('NotValidId'))
+  Card.create({ name, link, owner: req.user._id })
     .then((card) => {
-      res.status(200).send(card);
+      res.status(200).send({ data: card })
     })
     .catch((err) => {
-      if (err.message === 'NotValidId') {
-        res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
-      } else if (req.params.cardId.length !== 24) {
-        res.status(400).send({ message: 'Пользователь с указанным _id не найден' });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      if (err instanceof Error.ValidationError) {
+        next(new BadRequest('Переданы некорректные данные при создании карточки.'));
       }
+      next(err);
+    });
+};
+
+module.exports.getDeleteCardById = (req, res, next) => {
+  Card.findById(req.params.cardId)
+    .orFail(new NotFound('Карточка с указанным `_id` не найдена.'))
+    .then((card) => {
+      if (!card.owner.equals(req.user._id)) {
+        next(new Forbidden('Отсутствуют права для удаления карточки с указанным `_id`.'));
+      }
+      Card.deleteOne(card)
+        .then(res.send(card));
+    })
+    .catch((err) => {
+      if (err instanceof Error.CastError) {
+        next(new BadRequest('Передан несуществующий `_id` карточки.'));
+      }
+      next(err);
     })
 };
 
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },)
-    .orFail(new Error('NotValidId'))
+    .orFail(new NotFound('Передан несуществующий `_id` карточки.'))
     .then((card) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (err.message === 'NotValidId') {
-        res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
-      } else if (req.params.cardId.length !== 24) {
-        res.status(400).send({ message: 'Неверный _id' });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      if (err instanceof Error.CastError) {
+        next(new BadRequest('Переданы некорректные данные для постановки лайка.'));
       }
-    })
+      next(err);
+    });
 };
 
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },)
-    .orFail(new Error('NotValidId'))
+    .orFail(new NotFound('Передан несуществующий `_id` карточки.'))
     .then((card) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (err.message === 'NotValidId') {
-        res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
-        console.log(req.user._id);
-      } else if (req.params.cardId.length !== 24) {
-        res.status(400).send({ message: 'Неверный _id' });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      if (err instanceof Error.CastError) {
+        next(new BadRequest('Переданы некорректные данные для снятия лайка.'));
       }
-    })
+      next(err);
+    });
 };
 
 

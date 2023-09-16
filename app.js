@@ -1,41 +1,48 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
+const { craeteUser, login } = require('./controllers/users');
 const { PORT = 3000 } = process.env;
 const app = express();
-
+const auth = require('./middlewares/auth');
+const { validateLogin, validateCreateUser } = require('./middlewares/validation');
+const { errors } = require('celebrate');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // подключаемся к серверу mongo
 mongoose
-.set('strictQuery', false)
-.connect('mongodb://127.0.0.1:27017/mestodb', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+  .set('strictQuery', false)
+  .connect('mongodb://127.0.0.1:27017/mestodb', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch((error) => console.log(error))
-
-
-app.use((req, res, next) => {
-  req.user = {
-    _id: '64f2019af9472ab502ebcb10' // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
-
-  next();
-});
+  })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((error) => console.log(error))
 
 
+app.use(express.json());
+app.post('/signup', validateCreateUser, craeteUser);
+app.post('/signin', validateLogin, login);
 
+
+app.use(auth);
 
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
 
+app.use((err, req, res, next) => {
+  const { message = 'На сервере произошла ошибка.' } = err;
+  res.status(500).send({ message });
+  next();
+});
+
+app.use('*', (req, res, next) => next(new NotFound('Такая страница не существует.')));
+
+app.use(errors());
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

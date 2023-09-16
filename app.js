@@ -27,13 +27,12 @@ app.use(express.json());
 app.post('/signup', validateCreateUser, craeteUser);
 app.post('/signin', validateLogin, login);
 
-
 app.use(auth);
 
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
-
+app.use(errors());
 app.use((err, req, res, next) => {
   const { message = 'На сервере произошла ошибка.' } = err;
   res.status(500).send({ message });
@@ -41,8 +40,6 @@ app.use((err, req, res, next) => {
 });
 
 app.use('*', (req, res, next) => next(new NotFound('Такая страница не существует.')));
-
-app.use(errors());
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

@@ -12,6 +12,7 @@ const auth = require('./middlewares/auth');
 const { validateLogin, validateCreateUser } = require('./middlewares/validation');
 const NotFound = require('./errors/NotFound');
 const errorHandler = require('./middlewares/error-handler');
+const { requestLogger, errorLogger } = require('./middlewares/logger'); 
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -37,6 +38,7 @@ mongoose
 app.use(limiter);
 app.use(helmet());
 app.use(express.json());
+app.use(requestLogger);
 app.post('/signup', validateCreateUser, craeteUser);
 app.post('/signin', validateLogin, login);
 app.use(auth);
@@ -44,6 +46,7 @@ app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
 app.use('*', (req, res, next) => next(new NotFound('Такая страница не существует.')));
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 app.listen(PORT, () => {

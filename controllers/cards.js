@@ -7,7 +7,7 @@ const Forbidden = require('../errors/Forbidden');
 module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => {
-      res.status(200).send({ data: cards });
+      res.status(200).send({ cards });
     })
     .catch(next);
 };
@@ -17,7 +17,7 @@ module.exports.craeteCard = (req, res, next) => {
 
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
-      res.status(201).send({ data: card });
+      res.status(201).send({ card });
     })
     .catch((err) => {
       if (err instanceof Error.ValidationError) {

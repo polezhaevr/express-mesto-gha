@@ -9,7 +9,7 @@ const Conflict = require('../errors/Conflict');
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
-      res.status(200).send({ data: users });
+      res.status(200).send(users);
     })
     .catch(next);
 };
@@ -18,7 +18,7 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .orFail(new NotFound('Пользователь по указанному `_id` не найден.'))
     .then((user) => {
-      res.status(200).send({ data: user });
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err instanceof Error.CastError) {
@@ -72,12 +72,7 @@ module.exports.updateProfile = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
     .orFail(new NotFound('Пользователь по указанному `_id` не найден.'))
     .then((user) => {
-      res.status(200).send({
-        _id: user._id,
-        avatar: user.avatar,
-        name,
-        about,
-      });
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err instanceof Error.ValidationError) {
@@ -93,12 +88,7 @@ module.exports.updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
     .orFail(new Error('NotValidId'))
     .then((user) => {
-      res.status(200).send({
-        _id: user._id,
-        avatar,
-        name: user.name,
-        about: user.about,
-      });
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err instanceof Error.ValidationError) {

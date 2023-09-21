@@ -21,7 +21,7 @@
     "name": "Тестовый пользователь" , 
     "about": "Информация о себе" , 
     "avatar": "https://sun9-35.userapi.com/impf/c851136/v851136783/1b3da/EJECAAyXtok.jpg?size=1080x810&quality=96&sign=e7aef83170090ccda5765081ebe9cd3c&type=album",
-    "email": "test1@mail.ru" , 
+    "email": "test1@mail.ru" , ы
     "password": "qwerty123"
 
 }

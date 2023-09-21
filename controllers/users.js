@@ -70,7 +70,7 @@ module.exports.craeteUser = (req, res, next) => {
 
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(new NotFound('Пользователь по указанному `_id` не найден.'))
     .then((user) => {
       res.status(200).send(user);
@@ -86,7 +86,7 @@ module.exports.updateProfile = (req, res, next) => {
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(new Error('NotValidId'))
     .then((user) => {
       res.status(200).send(user);

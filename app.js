@@ -65,7 +65,6 @@ mongoose
   .then(() => console.log('Connected to MongoDB'))
   .catch((error) => console.log(error));
 
-app.use(limiter);
 app.use(helmet());
 app.use(express.json());
 app.use(requestLogger);
@@ -82,8 +81,10 @@ app.use(auth);
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
-app.use('*', (req, res, next) => next(new NotFound('Такая страница не существует.')));
 app.use(errorLogger);
+app.use(limiter);
+
+app.use('*', (req, res, next) => next(new NotFound('Такая страница не существует.')));
 app.use(errors());
 app.use(errorHandler);
 app.listen(PORT, () => {

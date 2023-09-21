@@ -69,6 +69,13 @@ app.use(limiter);
 app.use(helmet());
 app.use(express.json());
 app.use(requestLogger);
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+
 app.post('/signup', validateCreateUser, craeteUser);
 app.post('/signin', validateLogin, login);
 app.use(auth);
